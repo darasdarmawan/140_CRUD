@@ -95,7 +95,47 @@ app.put('/biodata/:id', (req, res) => {
   });
 });
 
+// 4️⃣ DELETE - Hapus data berdasarkan ID dan tampilkan data sisa
+app.delete('/biodata/:id', (req, res) => {
+  const { id } = req.params;
 
+  // 🔍 Cek dulu apakah data ada
+  const sqlCheck = 'SELECT * FROM biodata WHERE id = ?';
+  db.query(sqlCheck, [id], (err, rows) => {
+    if (err) {
+      console.error('Error checking data:', err);
+      return res.status(500).send('Terjadi kesalahan saat mengecek data');
+    }
+
+    if (rows.length === 0) {
+      return res.status(404).send('Data tidak ditemukan');
+    }
+
+    // 🗑️ Hapus data
+    const sqlDelete = 'DELETE FROM biodata WHERE id = ?';
+    db.query(sqlDelete, [id], (err, result) => {
+      if (err) {
+        console.error('Error deleting data:', err);
+        return res.status(500).send('Gagal menghapus data');
+      }
+
+      // 🔁 Ambil semua data sisa
+      const sqlGetAll = 'SELECT * FROM biodata';
+      db.query(sqlGetAll, (err, remainingData) => {
+        if (err) {
+          console.error('Error fetching remaining data:', err);
+          return res.status(500).send('Gagal mengambil data sisa');
+        }
+
+        // ✅ Kirimkan pesan + data sisa
+        res.status(200).json({
+          message: `🗑️ Data dengan ID ${id} berhasil dihapus`,
+          remainingData: remainingData
+        });
+      });
+    });
+  });
+});
 
 // Root route
 app.get('/', (req, res) => {
