@@ -39,3 +39,22 @@ app.get('/biodata', (req, res) => {
   });
 });
 
+// ✅ 2️⃣ POST - Tambahkan data baru
+app.post('/biodata', (req, res) => {
+  const { nama, alamat, agama } = req.body;
+
+  if (!nama || !alamat || !agama) {
+    return res.status(400).send('Nama, alamat, dan agama wajib diisi');
+  }
+
+  const sql = 'INSERT INTO biodata (nama, alamat, agama) VALUES (?, ?, ?)';
+  db.query(sql, [nama, alamat, agama], (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      res.status(500).send('Gagal menambahkan data');
+      return;
+    }
+    res.status(201).send(`Data berhasil ditambahkan dengan ID: ${result.insertId}`);
+  });
+});
+
