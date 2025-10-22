@@ -83,3 +83,34 @@ app.put('/biodata/:id', (req, res) => {
   });
 });
 
+// ✅ 4️⃣ DELETE - Hapus data berdasarkan ID
+app.delete('/biodata/:id', (req, res) => {
+  const { id } = req.params;
+
+  const sql = 'DELETE FROM biodata WHERE id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting data:', err);
+      res.status(500).send('Gagal menghapus data');
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Data dengan ID tersebut tidak ditemukan');
+    }
+
+    res.send('Data berhasil dihapus');
+  });
+});
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('Server Express.js dengan MySQL sudah berjalan 🚀');
+});
+
+// Jalankan server
+app.listen(PORT, () => {
+  console.log(`Server berjalan di http://localhost:${PORT}`);
+});
+
+
