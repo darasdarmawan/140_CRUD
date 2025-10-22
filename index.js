@@ -26,3 +26,16 @@ db.connect((err) => {
 });
 
 
+// ✅ 1️⃣ GET - Ambil semua data biodata
+app.get('/biodata', (req, res) => {
+  const sql = 'SELECT * FROM biodata';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching data:', err);
+      res.status(500).send('Terjadi kesalahan saat mengambil data');
+      return;
+    }
+    res.json(results);
+  });
+});
+
