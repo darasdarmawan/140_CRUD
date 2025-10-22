@@ -58,3 +58,28 @@ app.post('/biodata', (req, res) => {
   });
 });
 
+// ✅ 3️⃣ PUT - Update data berdasarkan ID
+app.put('/biodata/:id', (req, res) => {
+  const { id } = req.params;
+  const { nama, alamat, agama } = req.body;
+
+  if (!nama || !alamat || !agama) {
+    return res.status(400).send('Nama, alamat, dan agama wajib diisi');
+  }
+
+  const sql = 'UPDATE biodata SET nama = ?, alamat = ?, agama = ? WHERE id = ?';
+  db.query(sql, [nama, alamat, agama, id], (err, result) => {
+    if (err) {
+      console.error('Error updating data:', err);
+      res.status(500).send('Gagal mengupdate data');
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Data dengan ID tersebut tidak ditemukan');
+    }
+
+    res.send('Data berhasil diupdate');
+  });
+});
+
